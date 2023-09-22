@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
+
+class RestrictRegistrationToOneAdmin
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next)
+    {
+      $user = DB::table('users')->select('role_id')->where('id',1)->first();
+      if ($user && (int)$user->role_id === 1){
+          // редиректим на главную страницу, если у нас уже есть пользователь с такой ролью
+        return redirect("/");
+      }
+        return $next($request);
+    }
+}
